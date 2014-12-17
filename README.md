@@ -20,11 +20,10 @@ In order for you to get this working in your environment you need to do the foll
   - **ida:ClientId**
   - **ida:Password**
 1. Open the `packages.config` file in the project and remove all lines that have **O365** in them... there should be two of them.
-1. In the project's **References**, remove all references to Office 365 assemblies.
 1. Obtain your Azure AD tenant ID, a *GUID*, and insert it into the app setting **ida:TenantId** in the `web.config`.
 1. Run NuGet package restore to download all the NuGet packages. 
 
-    > You'll get a few errors if you try to build the project right now... don't worry about that for now as in the next step you will add the Office 365 NuGet packages & assembly references.
+    > You *may* get a few errors if you try to build the project right now... don't worry about that for now as in the next step you will add the Office 365 NuGet packages & assembly references.
 
 1. Run through the **Add => Connected Service** wizard in the project that will create the Azure AD application and update the `web.config` with the application's **ClientId** and **Password**.
 
