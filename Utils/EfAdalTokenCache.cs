@@ -64,17 +64,36 @@ namespace SampleMvcAzAuth.Utils {
     // If the HasStateChanged flag is set, ADAL changed the content of the cache
     void AfterAccessNotification(TokenCacheNotificationArgs args) {
       // if state changed
-      if (this.HasStateChanged) {
-        Cache = new PerUserWebCache {
-          WebUserUniqueId = User,
-          CacheBits = this.Serialize(),
-          LastWrite = DateTime.Now
-        };
-        //// update the DB and the lastwrite                
-        db.Entry(Cache).State = Cache.EntryId == 0 ? EntityState.Added : EntityState.Modified;
-        db.SaveChanges();
-        this.HasStateChanged = false;
-      }
+        if (this.HasStateChanged)
+        {
+            //for a first time person, cache is null.
+            if (Cache == null)
+            {
+                //created a new object
+                Cache = new PerUserWebCache
+                {
+                    WebUserUniqueId = User,
+                    CacheBits = this.Serialize(),
+                    LastWrite = DateTime.Now
+                };
+
+                //add it to the DbContext
+                db.PerUserCacheList.Add(Cache);
+            }
+            else
+            {
+                //update the CacheBits and LastWrite on the existing cache object.
+                Cache.CacheBits = this.Serialize();
+                Cache.LastWrite = DateTime.Now;
+                db.Entry(Cache).State = EntityState.Modified;
+            }
+
+            //update the database
+            db.SaveChanges();
+
+            //reset the flag
+            this.HasStateChanged = false;
+        }
     }
     void BeforeWriteNotification(TokenCacheNotificationArgs args) {
       // if you want to ensure that no concurrent write take place, use this notification to place a lock on the entry
